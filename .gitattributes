@@ -1,0 +1,31 @@
+# 统一换行符处理，避免 Windows/Linux 之间来回转换产生的噪音
+
+# 默认：Git 仓库内统一存 LF，检出到工作区时按平台自动转换
+* text=auto
+
+# 明确按文本处理（仓库内 LF）
+*.java      text
+*.xml       text
+*.yml       text
+*.yaml      text
+*.properties text
+*.sql       text
+*.md        text
+*.json      text
+*.sh        text eol=lf
+*.txt       text
+
+# Windows 专用脚本保持 CRLF
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+
+# 二进制文件不做任何转换
+*.jar       binary
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.pdf       binary
+*.zip       binary
+*.xlsx      binary
