@@ -29,3 +29,19 @@
 - [ ] 10/10 第一件事：`cd D:\learn; docker compose up -d`（内存足，四个一起起）
 - [ ] 10/10 起算法：1（两数之和）、26（删除有序数组重复项）、27（移除元素）
 - [ ] 10/18 复盘时评估：是否把系统变量 `JAVA_HOME` 也切成 21（需要管理员）
+
+## 2026-10-14 补记：四个库已拉起并验证连通
+
+`cd D:\learn; docker compose up -d` → 四容器 `Up (healthy)`，宿主机侧连通性实测：
+
+| 服务 | 版本 | 从宿主机验证 | 结果 |
+|---|---|---|---|
+| dev-mysql | MySQL 8.0.46 | `mysql --host=127.0.0.1 --port=3307` + TCP 3307 | ✅ 库 `it_service_desk` 在，`utf8mb4 / utf8mb4_unicode_ci / +08:00` |
+| dev-redis | Redis 7.4.11 | TCP 6379 | ✅ `PONG` |
+| dev-pg | PostgreSQL 17.11 | TCP 5432 | ✅ `agentdb` 可连，扩展 `vector 0.8.7`（pgvector 在） |
+| dev-rabbitmq | RabbitMQ 3.13 | TCP 5672/15672 + `HTTP 200` | ✅ 管理台 `http://localhost:15672` 账号 admin/admin123 可登录 |
+
+**踩坑记录**：容器之前是 `Exited (137)` —— 不是崩溃，是**10-12 Docker 引擎关闭时一起停的**（四个同一秒停止，`OOMKilled=false`）。直接 `up -d` 就恢复了，数据卷 `learn_*` 完好无损。
+
+**内存实测**：四容器合计约 **608 MiB**（mysql 387 + rabbitmq 166 + pg 47 + redis 7），`.wslconfig` 上限 5.79 GiB，余量充足。
+**重启行为**：`restart: unless-stopped` —— 重开 Docker Desktop 后它们会自己回来。
