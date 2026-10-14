@@ -29,6 +29,11 @@ management:
     web:
       exposure:
         include: health,info,metrics
+  endpoint:
+    health:
+      # 本地开发打开，能看到 db / redis 各自的 UP/DOWN。
+      # 生产环境不要设 always（会泄露依赖组件的内部信息）。
+      show-details: always
 
 logging:
   level:
